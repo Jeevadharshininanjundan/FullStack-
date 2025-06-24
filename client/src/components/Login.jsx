@@ -22,13 +22,18 @@ const Login= ()=> {
     };
 
     return (
-        <div>
-            <h2>Login</h2>
-            <form onSubmit={handleSubmit}>
-                <input type="email" name="email" placeholder="Email" onChange={handleChange} />
-                <input type="password" name="password" placeholder="Password" onChange={handleChange} />
-                <button type="submit">Login</button>
+        <div className='min-h-screen bg-[#1a1a1a] text-white flex justify-center items-center '>
+            <div className='bg-black p-8  rounded-lg shadow-lg w-full max-w-md'>
+            <h2 className='text-3xl font-semibold mb-6 text-center text-white'>Login</h2>
+            <form className='space-y-4' onSubmit={handleSubmit}>
+                <input type="email" name="email" placeholder="Email" onChange={handleChange}
+                className='w-full p-3 bg-[#1a1a1a] rounded-md focus: outline-none focus:ring-2 focus:ring-white' />
+                <input type="password" name="password" placeholder="Password" onChange={handleChange} 
+                className='w-full p-3 bg-[#1a1a1a] rounded-md focus:outline-none focus:ring-2 focus:ring-white'/>
+                <button type="submit"
+                className='w-full py-2 hover:bg-[#1a1a1a] rounded-md transition'>Login</button>
             </form>
+            </div>
         </div>
     );
 }

@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import cookieParser from 'cookie-parser';   
+import problemRoutes from './routes/problemRoutes.js';
+
 
 dotenv.config();
 
@@ -17,6 +19,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use("/", authRoutes);
 app.use('/', userRoutes);
+app.use('/problems',problemRoutes);
 
 mongoose
 .connect(process.env.MONGO_URL)
