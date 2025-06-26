@@ -5,6 +5,10 @@ import axios from 'axios';
 function ShowProblem() {
     const {id} = useParams();
     const [problem , setProblem] = useState(null);
+    const [code, setCode] = useState('');
+    const [language, setLanguage] = useState('cpp');
+    const[input,setInput] = useState('');
+    const [ output,setOutput] = useState('');
 
     useEffect(()=>{
         axios.get(`http://localhost:5000/problems/${id}`)
@@ -12,11 +16,27 @@ function ShowProblem() {
         .catch(err => alert('Error loading problem'));
     },[id]);
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try{
+            const res = await axios.post('http://localhost:8000/run', {
+                code,
+        
+                language
+            });
+            setOutput (res.data.output);
+            console.log(res.data);
+        }catch(err){
+            console.error('Error during submission:', err.response?.data || err.message); 
+            alert('Submission failed');
+        }
+    };
+
     if (!problem) return <p>Loading...</p>;
 
     return (
-        <div className='min-h-screen bg-[#1a1a1a] text-white flex items-center justify-center px-4'>
-           <div className='bg-black  p-8 rounded-lg shadow-lg w-full max-w-2xl'>
+        <div className='min-h-screen bg-[#1a1a1a] text-white px-6 py-10 flex gap-6 flex-col lg:flex-row'>
+           <div className='bg-black  p-8 rounded-lg shadow-lg w-full lg:w-1/2'>
             <h2 className='text-2xl font bold mb-4 border-b border-gray-300 pb-2'>{problem.title}</h2>
             <p className='text-lg mb-4'>
                 <span className='font-semibold'>Description:</span> {problem.description}</p>
@@ -41,6 +61,51 @@ function ShowProblem() {
             )}
            </div>
         </div> 
+
+        <div className="w-full lg:w-1/2 bg-black p-8 rounded-lg shadow-lg">
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <div className='flex justify-between items-center'>
+                    <label className='text-lg font-semibold'>Language</label>
+                    <select
+                       value={language}
+                       onChange={(e) => setLanguage(e.target.value)}
+                       className="p-2 rounded bg-[#1a1a1a] text-white" 
+                       >
+                        <option value="cpp">C++</option>
+                        <option value="python">Python</option>
+                        <option value="java">Java</option>
+                       </select>
+
+                </div>
+                <textarea
+                    rows="12"
+                    className="w-full p-3 bg-black text-white rounded-md"
+                    placeholder='Write your code here... '
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    />
+
+               
+                  
+                <button
+                    type ="submit"
+                    className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-300"
+                >
+                    Submit Code
+                </button>
+
+                {output ? (
+                    <div className="mt-4 bg-black p-4 rounded text-green-400">
+                        <h3 className="text-lg font-semibold mb-1">Output:</h3>
+                        <pre>{output}  </pre>
+                    </div>
+                ):(
+                    <div className='mt-4 text-red-400'>No output</div>
+                )}
+            </form>
+
+
+        </div>
       </div>
     );
 

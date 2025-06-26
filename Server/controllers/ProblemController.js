@@ -42,3 +42,34 @@ export const addProblem = async (req,res) => {
         res.status(500).json({ message: 'Failed to add problem' });
     }
 }
+
+export const submitSolution = async (req, res) => {
+    const {id} = req.params;
+    const { code, language,input} = req.body;
+
+    try{
+        const problem = await Problems.findById(id);
+        if(!problem) return res.status(404).json({ message: 'Problem not found' });
+
+        const testCases = problem.testCases;
+        let verdict = 'Accepted';
+
+        for(const test of testCases){
+            const result = await axios.post('http://localhost:8000/run',{
+                code, input:test.input,
+                language,
+            });
+            const expected = test.output.trim();
+            const actual = result.data.output.trim();
+            if(actual !== expected) {
+                verdict = 'Wrong Answer';
+                break;
+            }
+        }
+         res.status(200).json({ verdict });
+    } catch (error) {
+        console.error('Submission Error:', error);
+        res.status(500).json({ message: 'Error during submission', error: error.message  });
+    }
+        }  ; 
+    
