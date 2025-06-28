@@ -1,4 +1,5 @@
 import Problems from '../models/Problems.js';
+import axios from 'axios';  
 
 export const getProblem = async (req, res) => {
     try{
@@ -45,7 +46,7 @@ export const addProblem = async (req,res) => {
 
 export const submitSolution = async (req, res) => {
     const {id} = req.params;
-    const { code, language,input} = req.body;
+    const { code, language} = req.body;
 
     try{
         const problem = await Problems.findById(id);
@@ -56,7 +57,8 @@ export const submitSolution = async (req, res) => {
 
         for(const test of testCases){
             const result = await axios.post('http://localhost:8000/run',{
-                code, input:test.input,
+                code,
+                input:test.input,
                 language,
             });
             const expected = test.output.trim();

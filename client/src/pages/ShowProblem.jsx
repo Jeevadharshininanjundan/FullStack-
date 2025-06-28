@@ -2,6 +2,7 @@ import React,{ useEffect, useState  } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
+
 function ShowProblem() {
     const {id} = useParams();
     const [problem , setProblem] = useState(null);
@@ -9,6 +10,7 @@ function ShowProblem() {
     const [language, setLanguage] = useState('cpp');
     const[input,setInput] = useState('');
     const [ output,setOutput] = useState('');
+    const [submitted, setSubmitted] = useState(false);
 
     useEffect(()=>{
         axios.get(`http://localhost:5000/problems/${id}`)
@@ -18,17 +20,28 @@ function ShowProblem() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
         try{
             const res = await axios.post('http://localhost:8000/run', {
                 code,
-        
-                language
+                 language,
+                testCases : problem.testCases
+               
             });
-            setOutput (res.data.output);
-            console.log(res.data);
+
+            console.log("Response from server:", res.data);
+            setSubmitted(true)
+            if(res.data.allPassed) {
+                setOutput("Code executed successfully and passed all test cases!");
+            }else{
+                const failed = res.data.results.find(r => !r.passed);
+                setOutput(`Test case ${failed.testCase} failed.\nExpected:${failed.expected}\nGot:${failed.actual}`);
+            }
         }catch(err){
-            console.error('Error during submission:', err.response?.data || err.message); 
-            alert('Submission failed');
+            console.log("error from server:",err);
+            setSubmitted(true);
+            setOutput('Error running code');
+            
         }
     };
 
@@ -94,14 +107,15 @@ function ShowProblem() {
                     Submit Code
                 </button>
 
-                {output ? (
+                {submitted ? (
+                output ? (
                     <div className="mt-4 bg-black p-4 rounded text-green-400">
                         <h3 className="text-lg font-semibold mb-1">Output:</h3>
-                        <pre>{output}  </pre>
+                        <pre>{output || 'No output received'}  </pre>
                     </div>
                 ):(
                     <div className='mt-4 text-red-400'>No output</div>
-                )}
+                ) ): null}
             </form>
 
 
