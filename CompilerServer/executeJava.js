@@ -16,15 +16,19 @@ const executeJava = (filePath, input ="") => {
         const className = 'Main';
 
         const compileCommand = `javac "${filePath}"`;
-        const inputSanitized = input.replace(/\r?\n/g, '\r\n'); // Windows line endings
-        const runCommand = `cd "${dir}" && echo ${JSON.stringify(inputSanitized)} | java ${className}`;
+       
+        const runCommand = `cd "${dir}" &&  java ${className}`;
         const fullCommand = `${compileCommand} && ${runCommand}`;
 
-        exec(fullCommand, (err, stdout, stderr) => {
+        const child = exec(fullCommand, (err, stdout, stderr) => {
             if (err) return reject({ error: err.message });
             if (stderr) return reject({ error: stderr });
             resolve(stdout.trim());
         });
+        if(input){
+            child.stdin.write(input);
+        }
+        child.stdin.end();
 });
        
 };

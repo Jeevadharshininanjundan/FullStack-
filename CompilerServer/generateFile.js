@@ -12,7 +12,6 @@ if (!fs.existsSync(dirCodes)) {
 }
 const extMap = {
     cpp:'.cpp',
-
     python:'.py',
     java:'.java'
 };

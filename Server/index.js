@@ -7,7 +7,7 @@ import userRoutes from './routes/userRoutes.js';
 import cookieParser from 'cookie-parser';   
 import problemRoutes from './routes/problemRoutes.js';
 import { submitSolution } from './controllers/ProblemController.js';
-
+import submissionRoutes from './routes/submissionRoutes.js';
 
 dotenv.config();
 
@@ -22,6 +22,7 @@ app.use("/", authRoutes);
 app.use('/', userRoutes);
 app.use('/problems',problemRoutes);
 app.post('/submit/:id',submitSolution);
+app.use('/submissions',submissionRoutes);
 
 mongoose
 .connect(process.env.MONGO_URL)
