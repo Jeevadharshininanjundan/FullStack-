@@ -54,7 +54,7 @@ project-root/
 bash
 Copy
 Edit
-git clone https://github.com/your-username/fullstack-coding-platform.git
+git clone https://github.com/Jeevadharshininanjundan/fullstack-.git
 cd fullstack-coding-platform
 2. Setup Backend
 bash
