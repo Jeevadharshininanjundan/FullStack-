@@ -66,30 +66,30 @@ Make sure your backend API calls the compiler service at `http://localhost:8000`
 
 ### Auth
 ```http
-POST   /api/auth/register
-POST   /api/auth/login
-GET    /api/auth/me
+POST   /register
+POST   /login
+GET    /me
 ```
 
 ### Problems
 ```http
-GET    /api/problems
-POST   /api/problems      // Admin only
-GET    /api/problems/:id
+GET    /problems
+POST   /problems      // Admin only
+GET    /problems/:id
 ```
 
 ### Submissions
 ```http
-POST   /api/submit
-GET    /api/submissions/:userId
+POST   /submit
+GET    /submissions/:userId
 ```
 
 ### Contests
 ```http
-GET    /api/contests
-POST   /api/contests       // Admin only
-GET    /api/contests/:id
-GET    /api/contests/:id/leaderboard
+GET    /contests
+POST   /contests       // Admin only
+GET    /contests/:id
+GET    /contests/:id/leaderboard
 ```
 
 ### Compiler Server
