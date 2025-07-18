@@ -8,6 +8,9 @@ import cookieParser from 'cookie-parser';
 import problemRoutes from './routes/problemRoutes.js';
 import { submitSolution } from './controllers/ProblemController.js';
 import submissionRoutes from './routes/submissionRoutes.js';
+import dashboardRoute from './routes/dashboardRoutes.js'
+import reviewRoute from'./routes/review.js';
+import contestRoute from'./routes/contest.js';
 
 dotenv.config();
 
@@ -23,6 +26,14 @@ app.use('/', userRoutes);
 app.use('/problems',problemRoutes);
 app.post('/submit/:id',submitSolution);
 app.use('/submissions',submissionRoutes);
+app.use('/dashboard-stats',dashboardRoute);
+app.use('/ai-review', reviewRoute);
+app.use('/contests',contestRoute);
+app.get('/test', (req, res) => {
+  console.log("Test route hit");
+  res.send("Test route working");
+});
+
 
 mongoose
 .connect(process.env.MONGO_URL)

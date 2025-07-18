@@ -13,7 +13,7 @@ const executePy = (filePath, input ="") => {
     return new Promise((resolve, reject) => {
         const child = exec(`python "${filePath}"`,(err,stdout,stderr) => {
             if(err) return reject({error:err.message});
-            if(stderr) return reject({error:stderr});
+            if(stderr && !stdout) return reject({error:stderr});
             resolve(stdout.trim());
         });
         if(input){

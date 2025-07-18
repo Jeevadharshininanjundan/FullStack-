@@ -13,7 +13,7 @@ const executeJava = (filePath, input ="") => {
     return new Promise((resolve, reject) => {
         const dir = path.dirname(filePath);
         const fileName = path.basename(filePath);
-        const className = 'Main';
+        const className = fileName.replace('.java','');
 
         const compileCommand = `javac "${filePath}"`;
        

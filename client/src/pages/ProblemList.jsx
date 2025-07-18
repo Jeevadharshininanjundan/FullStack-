@@ -3,27 +3,49 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 function ProblemList() {
-    const [problems, setproblems] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
+  const [problems, setproblems] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [difficultyFilter, setDifficultyFilter] = useState('all');
-    useEffect(() => {
-        axios.get('http://localhost:5000/problems')
-        .then(res => {
-            console.log("res.data = ",res.data);
-            setproblems(res.data)
-    })
-        .catch(err => console.error(err));
-    }, []);
+  const [tagFilter, setTagFilter] = useState('all');
+  const [allTags, setAllTags] = useState([]);
+  const [statusMap, setStatusMap] = useState({});
 
-    const filteredProblems = problems.filter((p) => {
-      const matchesSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesDifficulty =
-      difficultyFilter === 'all' || p.difficulty.toLowerCase() === difficultyFilter;
-    return matchesSearch && matchesDifficulty;
-    });
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const problemsRes = await axios.get('http://localhost:5000/problems');
+        setproblems(problemsRes.data);
 
-    const getDifficultyStyle = (level) => {
-    switch (level.toLowerCase()) {
+        const tagSet = new Set();
+        problemsRes.data.forEach(p => {
+          if (Array.isArray(p.tags)) {
+            p.tags.forEach(tag => tagSet.add(tag.toLowerCase().trim()));
+          }
+              
+        });
+        setAllTags(Array.from(tagSet));
+
+        const statusRes = await axios.get('http://localhost:5000/submissions/status', {
+          withCredentials: true,
+        });
+        setStatusMap(statusRes.data);
+        console.log("Status Map:", statusRes.data);
+
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchData();
+  }, []);
+  const getStatusIcon = (verdict) => {
+    console.log("Verdict:", verdict);
+  if (verdict === 'Accepted') return <span className="text-green-500 text-sm ">✔</span>;
+  if (verdict === 'Wrong Answer') return <span className="text-red-500 text-sm ">✖</span>;
+  return <span className="text-gray-500 text-lg">○</span>; // Not attempted
+};
+const getDifficultyColor = (difficulty) => {
+   switch (difficulty.toLowerCase()) {
       case 'easy':
         return 'bg-[#22543d] text-[#9ae6b4]';
       case 'medium':
@@ -35,21 +57,40 @@ function ProblemList() {
     }
   };
 
-    return(
-       <div className="min-h-screen bg-gradient-to-b from-[#0a0a0f] to-[#1c0f2e] text-purple-300 px-6 py-10">
+
+  const filteredProblems = problems.filter((p) => {
+    const matchesSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesDifficulty =
+      difficultyFilter === 'all' || p.difficulty.toLowerCase() === difficultyFilter;
+    const tagList = Array.isArray(p.tags) ? p.tags.map(t => t.toLowerCase().trim()) : [];
+    const matchesTag = tagFilter === 'all' || tagList.includes(tagFilter.toLowerCase());
+
+    
+    return matchesSearch && matchesDifficulty && matchesTag;
+
+  });
+console.log("Rendering statusMap:", statusMap);
+filteredProblems.forEach(p => {
+  console.log(`Problem ${p._id} Status:`, statusMap[p._id]);
+});
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-[#0a0a0f] to-[#1c0f2e] text-purple-300 px-6 py-10">
       <h2 className="text-center text-3xl font-semibold mb-6">Problem Set</h2>
 
-      {/* Search and Filter */}
-      <div className=" flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+     
+    <div className=" flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+
         <input
           type="text"
           placeholder="Search by title..."
-          className="px-4 py-2 w-full md:w-1/3 rounded bg-[#2a2a3b] text-white"
+          className="px-4 py-2 w-full md:w-1/3 rounded-full bg-[#1f1f2e] text-white"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
+        <div className="flex gap-4 w-full md:w-auto">
         <select
-          className="px-4 py-2 rounded bg-[#2a2a3b] text-purple-300"
+          className="px-4 py-2 rounded-full bg-[#1f1f2e] text-purple-300"
           value={difficultyFilter}
           onChange={(e) => setDifficultyFilter(e.target.value)}
         >
@@ -58,44 +99,80 @@ function ProblemList() {
           <option value="medium">Medium</option>
           <option value="hard">Hard</option>
         </select>
+
+        <select
+          className="px-4 py-2 rounded-full bg-[#1f1f2e] text-purple-300"
+          value={tagFilter}
+          onChange={(e) => setTagFilter(e.target.value)}
+        >
+          <option value="all">All Tags</option>
+          {allTags.map((tag, index) => (
+            <option key={index} value={tag}>{tag}</option>
+          ))}
+        </select>
       </div>
-
-
-      <div className="grid grid-cols-[5fr_1fr_1fr_1fr] gap-4  text-left text-sm font-semibold border-b border-gray-600 pb-2">
+     </div>
+     
+      <div className="grid grid-cols-[5fr_2fr_1fr_1fr] gap-6 text-left text-lg font-bold border-b border-gray-600 pb-2">
         <div>Title</div>
         <div>Tags</div>
         <div>Difficulty</div>
-        <div>Acceptance</div>
+        <div >Acceptance</div>
       </div>
 
-      <ul className="space-y-3 mt-4">
-        {filteredProblems.map((p) => (
+      
+  
+
+      <ul className="space-y-2 mt-3 w-full">
+        {filteredProblems.map((p) => {
+          const status = statusMap[String(p._id)]; // Access the status using the string representation of the ID
+    console.log("Problem ID:", p._id, "Status:", status); 
+         return (
           <li
             key={p._id}
-            className="grid grid-cols-[5fr_1fr_1fr_1fr] items-center gap-4 bg-[#2d253d] hover:bg-[#3b2c4d] p-2 rounded-md shadow-sm transition"
+            className="w-full grid grid-cols-[5fr_2fr_1fr_1fr] items-center gap-6 bg-[#1f1f2e] hover:bg-[#3b2c4d] p-2 rounded-md shadow-sm transition
+            overflow-hidden"
           >
-            <Link to={`/problems/${p._id}`} className="text-lg font-medium ">
-              {p.title}
-            </Link>
+            <div className="flex items-center gap-2 text-lg font-medium  ">
+             {getStatusIcon(status?.verdict)
+}
 
-            <div className="flex flex-wrap gap-2">
-              {p.tags?.map((tag, index) => (
-                <span key={index} className="bg-[#2a4365] text-[#7f9cf5] text-xs px-2 py-0.5 rounded-full">
-                  {tag}
-                </span>
-              ))}
+              <Link to={`/problems/${p._id}`} className="hover:underline truncate max-w-[100%]">{p.title}</Link>
             </div>
-            <div className="flex justify-start">
-            <span className={`inline-block text-sm px-2 py-0.5 rounded-full ${getDifficultyStyle(p.difficulty)}`}>
-              {p.difficulty}
-            </span>
+            
+            <div className="w-full overflow-hidden">
+  <div className="flex flex-wrap gap-2">
+    {p.tags?.slice(0, 2).map((tag, index) => (
+      <span
+        key={index}
+        className="bg-[#2a4365] text-[#7f9cf5] text-xs px-2 py-0.5 rounded-full truncate max-w-[100px] overflow-hidden text-ellipsis"
+        title={tag}
+      >
+        {tag}
+      </span>
+    ))}
+
+    {p.tags?.length > 2 && (
+      <span className="bg-[#2a4365] text-[#7f9cf5] text-xs px-2 py-0.5 rounded-full">
+        +{p.tags.length - 2}
+      </span>
+    )}
+  </div>
+</div>
+            <div className='flex justify-start'>
+            <div className={`inline-block text-sm px-2 py-0.5 rounded-full ${getDifficultyColor(p.difficulty)}`}>{p.difficulty}</div>
             </div>
-            <span className="text-sm text-gray-300">{p.acceptance}%</span>
+            <span className="text-sm-right-10 ">{p.acceptance}%</span>
           </li>
-        ))}
+         );
+})}
       </ul>
-    </div>
+      </div>
+    
   );
 }
 
 export default ProblemList;
+
+
+

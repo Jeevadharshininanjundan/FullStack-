@@ -6,7 +6,7 @@ import {isAdmin} from '../middleware/authmiddleware.js';
 const router = express.Router();
 
 router.get('/', getAllProblems);
-router.get('/:id', getProblemById);
+router.get('/:id',getProblemById);
 router.post('/add', verifyToken, isAdmin, addProblem);
 router.post('/submit/:id', verifyToken,submitSolution);
 router.put('/update/:id', verifyToken, isAdmin, updateProblem);

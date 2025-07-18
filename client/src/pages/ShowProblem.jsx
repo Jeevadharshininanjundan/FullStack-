@@ -1,6 +1,9 @@
 import React,{ useEffect, useState  } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import AIReviewModal from '../components/AIReview.jsx';
+
+
 
 
 function ShowProblem() {
@@ -11,7 +14,7 @@ function ShowProblem() {
     const[input,setInput] = useState('');
     const [ output,setOutput] = useState('');
     const [submitted, setSubmitted] = useState(false);
-
+const [showReview,setShowReview] = useState(false);
     useEffect(()=>{
         axios.get(`http://localhost:5000/problems/${id}`)
         .then(res => setProblem(res.data))
@@ -20,26 +23,19 @@ function ShowProblem() {
 
     const handleRun = async (e) => {
         e.preventDefault();
-        
+         const finalInput = input.trim() !== '' ? input : (problem.input || '');
         try{
             const res = await axios.post('http://localhost:8000/run', {
                 code,
                  language,
-                testCases : problem.testCases
-               
+                input : finalInput,
+                 mode: 'run'
             });
 
-            console.log("Response from server:", res.data);
-            setSubmitted(true)
-            if(res.data.allPassed) {
-                setOutput("Code executed successfully and passed all test cases!");
-            }else{
-                const failed = res.data.results.find(r => !r.passed);
-                setOutput(`Test case ${failed.testCase} failed.\nExpected:${failed.expected}\nGot:${failed.actual}`);
-            }
+            setOutput(`Output:\n${res.data.output || 'No output returned.'}`);
         }catch(err){
-            console.log("error from server:",err);
-            setSubmitted(true);
+            console.log("Run Error",err);
+            
             setOutput('Error running code');
             
         }
@@ -52,23 +48,20 @@ function ShowProblem() {
             const res = await axios.post(`http://localhost:5000/problems/submit/${id}`, {
                 code,
                 language,
+                mode: 'submit'
                 
             },
             {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                withCredentials : true
             }
         );
-
+           const verdict = res.data.verdict;
+           const resultMsg = verdict === 'Accepted'
+           ? "Code submitted successfully and passed all the test Cases!"
+           : `Submission failed. Verdict: ${verdict}`;
             
             setSubmitted(true);
-            if (res.data.verdict === 'Accepted') {
-                setOutput("Code submitted successfully and passed all test cases!");
-            } else {
-                
-                setOutput(`Submission failed. Verdict: ${res.data.verdict}`);
-            }
+            setOutput(resultMsg);
         } catch (err) {
             console.log(err);
             setSubmitted(true);
@@ -128,6 +121,13 @@ function ShowProblem() {
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
                     />
+                    <textarea
+  rows="4"
+  className="w-full p-3 bg-[#0f0c1c] text-purple-200 rounded-md border border-[#3f0d68] focus:outline-none"
+  placeholder="Enter your custom input..."
+  value={input}
+  onChange={(e) => setInput(e.target.value)}
+/>
 
                
                <div className="flex gap-4">
@@ -146,21 +146,33 @@ function ShowProblem() {
                     Submit Code
                 </button>
 
+                <button
+              type="button"
+              onClick={() => setShowReview(true)}
+              className="w-1/3 bg-green-600 hover:bg-green-700 text-white py-2 rounded-md shadow-md hover:shadow-green-500 transition duration-300"
+            >
+              AI Review
+            </button>
+
                </div>
 
-                {submitted ? (
-                output ? (
-                    <div className="mt-4 bg-[#0f0c29] p-4 rounded text-green-400 border border-green-600">
+                {output && (
+                    <div className={`mt-4 bg-[#0f0c29] p-4 rounded border ${submitted ? 'text-green-400 border-green-600' : 'text-yellow-400 border-yellow-600'}`}>
                         <h3 className="text-lg font-semibold mb-1">Output:</h3>
-                        <pre>{output || 'No output received'}  </pre>
+                        <pre className="text-purple-200 whitespace-pre-wrap">{output || 'No output received'}  </pre>
                     </div>
-                ):(
-                    <div className='mt-4 text-red-400'>No output</div>
-                ) ): null}
+                )}
             </form>
 
 
         </div>
+         {showReview && (
+        <AIReviewModal
+          code={code}
+          onClose={() => setShowReview(false)}
+        />
+      )}
+    
       </div>
     );
 

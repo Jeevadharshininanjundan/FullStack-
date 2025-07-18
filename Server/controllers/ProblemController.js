@@ -52,31 +52,25 @@ export const submitSolution = async (req, res) => {
         const problem = await Problems.findById(id);
         if(!problem) return res.status(404).json({ message: 'Problem not found' });
 
-        let verdict = 'Accepted';
-        let runtime = 'N/A';
+         const response = await axios.post('http://localhost:8000/run', {
+            code,
+            language,
+            mode: 'submit',
+            testCases: problem.testCases,
+        });
 
-        for(const test of problem.testCases){
-            const result = await axios.post('http://localhost:8000/run',{
-                code,
-                input:test.input,
-                language,
-            });
-            const expected = test.output?.trim();
-            const actual = result.data.output?.trim();
-            runtime =  result.data.runtime || 'N/A';
-            if(actual !== expected) {
-                verdict = 'Wrong Answer';
-                break;
-            }
-        }
+        const { allPassed, results } = response.data;
+        const verdict = allPassed ? 'Accepted' : 'Wrong Answer';
+        
         await Submission.create({
-            userId,
+            user : userId,
             problemId : id,
             problemTitle : problem.title,
             code,
             language,
             verdict,
-            runtime
+            contestId: req.body.contestId || null,
+            runtime: response.data.runtime || 'N/A'
 
         });
          return res.status(200).json({ verdict });

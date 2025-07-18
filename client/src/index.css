@@ -1,2 +1,89 @@
 @import "tailwindcss";
 
+.react-calendar-heatmap {
+  transform: scale(0.7);
+  transform-origin: top center;
+  /* Center the heatmap */
+.heatmap-wrapper {
+ 
+  margin-top: 2rem;
+}
+
+/* Style the heatmap squares */
+.react-calendar-heatmap .color-empty {
+  fill: black; /* default black */
+}
+.react-calendar-heatmap .month-label {
+  margin-right: 8px;
+  font-size: 0.75rem;
+  fill: #999;
+}
+
+.react-calendar-heatmap .color-filled {
+  fill: purple; /* streak color */
+}
+
+/* Resize the boxes */
+.react-calendar-heatmap rect {
+  width: 10px !important;
+  height: 10px !important;
+  rx: 2px;
+  ry: 2px;
+  stroke: #1e1e1e;
+  stroke-width: 1px;
+}
+
+/* Add space between months */
+.react-calendar-heatmap .month-label {
+  font-size: 10px;
+  margin-right: 4px;
+  transform: translateX(4px);
+}
+
+.react-calendar-heatmap text {
+  font-size: 0 !important; /* hides day labels */
+}
+
+/* Additional spacing between month columns */
+.react-calendar-heatmap .months {
+  gap: 8px; /* might need tweaking */
+}
+
+  
+}
+.react-calendar-heatmap > g > g {
+  margin-right: 8px; /* works with SVG <g> groups representing months */
+}
+
+.react-calendar-heatmap rect {
+  rx: 2px;
+  ry: 2px;
+  stroke: none;
+}
+
+.react-calendar-heatmap text {
+  font-size: 2px;
+  fill: #000;
+}
+
+/* Styling each SVG month block group */
+.react-calendar-heatmap > g > g {
+  margin-right: 8px;
+}
+
+/* Color mapping */
+.color-empty {
+  fill: #222; /* darker gray for empty cells */
+}
+.color-scale-1 {
+  fill: #7c3aed;
+}
+.color-scale-2 {
+  fill: #6d28d9;
+}
+.color-scale-3 {
+  fill: #5b21b6;
+}
+.color-scale-4 {
+  fill: #4c1d95;
+}

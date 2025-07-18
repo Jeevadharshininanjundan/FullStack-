@@ -6,7 +6,7 @@ const problemSchema = new mongoose.Schema({
   input : String,
   output : String,
   tags: [String],
-  difficulty: { type: String, enum: ['Easy', 'Medium', 'Hard'], default: 'Easy'},
+  difficulty: { type: String, enum: ['Easy', 'Medium', 'Hard'], required: true},
   acceptance: { type: Number, default: 0 },
     testCases : [
         {
