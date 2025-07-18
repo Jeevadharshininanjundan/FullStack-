@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # CodeJudge - Full-Stack Online Judge Platform
 
 ##  Overview
@@ -66,30 +67,54 @@ Make sure your backend API calls the compiler service at `http://localhost:8000`
 
 ### Auth
 ```http
+<<<<<<< HEAD
 POST   /register
 POST   /login
 GET    /me
+=======
+POST   /api/auth/register
+POST   /api/auth/login
+GET    /api/auth/me
+>>>>>>> e8114d4 (Add professional README file)
 ```
 
 ### Problems
 ```http
+<<<<<<< HEAD
 GET    /problems
 POST   /problems      // Admin only
 GET    /problems/:id
+=======
+GET    /api/problems
+POST   /api/problems      // Admin only
+GET    /api/problems/:id
+>>>>>>> e8114d4 (Add professional README file)
 ```
 
 ### Submissions
 ```http
+<<<<<<< HEAD
 POST   /submit
 GET    /submissions/:userId
+=======
+POST   /api/submit
+GET    /api/submissions/:userId
+>>>>>>> e8114d4 (Add professional README file)
 ```
 
 ### Contests
 ```http
+<<<<<<< HEAD
 GET    /contests
 POST   /contests       // Admin only
 GET    /contests/:id
 GET    /contests/:id/leaderboard
+=======
+GET    /api/contests
+POST   /api/contests       // Admin only
+GET    /api/contests/:id
+GET    /api/contests/:id/leaderboard
+>>>>>>> e8114d4 (Add professional README file)
 ```
 
 ### Compiler Server
@@ -126,3 +151,9 @@ docker-compose up --build
 
 ##  Contributing
 Contributions are welcome! Feel free to fork the repo and submit pull requests. For major changes, please open an issue first to discuss what you would like to change.
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> e8114d4 (Add professional README file)
