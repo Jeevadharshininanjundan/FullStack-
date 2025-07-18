@@ -1,4 +1,4 @@
-# Code Quest - Competitive Programming Platform
+# CodeJudge - Full-Stack Online Judge Platform
 
 ##  Overview
 Code Quest is a full-stack competitive programming platform that allows users to practice coding problems, participate in contests, track progress via heatmaps and leaderboards, and more.
