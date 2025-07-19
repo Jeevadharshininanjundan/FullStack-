@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # CodeJudge - Full-Stack Online Judge Platform
 
 ##  Overview
