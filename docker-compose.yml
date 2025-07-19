@@ -1,0 +1,17 @@
+
+services:
+  compiler:
+    image: compiler-server:latest
+    container_name: compiler-container
+    ports:
+      - "5000:5000"
+
+  server:
+    image: my-server:latest
+    container_name: backend-container
+    ports:
+      - "8000:8000"
+    depends_on:
+      - compiler
+    environment:
+      - COMPILER_URL=http://compiler:5000
